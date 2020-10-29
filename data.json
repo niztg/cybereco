@@ -1,4 +1,12 @@
 {
-
-  
+    "715743556488396872": {
+        "rates": 1.25,
+        "money_symbol": "\u2744\ufe0f",
+        "users": []
+    },
+    "111": {
+        "rates": 1.0,
+        "money_symbol": "\u2744\ufe0f",
+        "users": []
+    }
 }
