@@ -10,7 +10,7 @@ __all__ = (
 
 def guild_exists(guild_id: int):
     data = json.load(open(FILENAME))
-    return data.get(str(guild_id))
+    return bool(data.get(str(guild_id)))
 
 
 def create_guild(guild_id: int):
