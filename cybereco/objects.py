@@ -14,12 +14,13 @@ REGEX = re.compile(r'[0-9]+')
 
 class Guild:
     def __init__(self, guild_id: int):
-        if not guild_exists(guild_id):
-            create_guild(guild_id)
 
         guild_id = str(guild_id)
-        if (not len(guild_id) == 18) or (not re.match(REGEX, guild_id)):
+        if (not len(guild_id) == 18) or (not guild_id.isdigit()):
             raise InvalidID()
+
+        if not guild_exists(int(guild_id)):
+            create_guild(int(guild_id))
 
         data = json.load(open(FILENAME))
         guild = data.get(guild_id)
@@ -32,6 +33,9 @@ class Guild:
         self.g_id = guild_id
         self.money_symbol: str = guild.get('money_symbol')
         self.rates: float = guild.get('rates')
+
+    def __repr__(self):
+        return "<Guild {0.g_id} money_symbol={0.money_symbol} rates={0.rates}>".format(self)
 
     def update_rates(self, rates: float):
         data = self.data

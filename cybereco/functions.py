@@ -18,8 +18,6 @@ def create_guild(guild_id: int):
     data[str(guild_id)] = {
         "rates": 1.00,
         "money_symbol": "❄️",
-        "users": [
-
-        ]
+        "users": []
     }
     json.dump(data, open(FILENAME, 'w'), indent=4)

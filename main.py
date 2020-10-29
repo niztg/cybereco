@@ -1,5 +1,6 @@
 from discord.ext import commands
 from config import token
+from context import Context
 
 import os
 
@@ -8,13 +9,18 @@ os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True"
 
 EXTENSIONS = ['cog', 'jishaku']
 
-bot = commands.Bot(command_prefix="=")
 
-for ext in EXTENSIONS:
-    bot.load_extension(ext)
+class Bot(commands.Bot):
+    async def get_context(self, message, *, cls=Context):
+        return await super().get_context(message, cls=cls)
 
-@bot.event
-async def on_ready():
-    print("AAA")
+    async def on_ready(self):
+        for ext in EXTENSIONS:
+            self.load_extension(ext)
+        print("AAA")
 
-bot.run(token)
+    def run(self, *args, **kwargs):
+        super().run(token)
+
+
+Bot(command_prefix="=").run()
