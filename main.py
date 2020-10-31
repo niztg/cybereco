@@ -1,4 +1,5 @@
 from discord.ext import commands
+from discord import Intents
 from config import token
 from context import Context
 
@@ -23,4 +24,4 @@ class Bot(commands.Bot):
         super().run(token)
 
 
-Bot(command_prefix="=").run()
+Bot(command_prefix=";", intents=Intents.all()).run()

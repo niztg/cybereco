@@ -1,3 +1,3 @@
-from .objects import Guild
+from .objects import Guild, Member, Tool
 from .exceptions import InvalidID
-from .functions import create_guild, guild_exists
+from .functions import *

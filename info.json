@@ -1,0 +1,23 @@
+{
+  "Tools": [
+    {
+      "name": "Wooden Shovel",
+      "power": 1,
+      "price": null,
+      "id": 21522
+
+    },
+    {
+      "name": "ScavengePro 3000",
+      "power": 15,
+      "price": 100,
+      "id": 10035
+    },
+    {
+      "name": "Scavenge King",
+      "power": 30,
+      "price": 250,
+      "id": 74191
+    }
+  ]
+}
