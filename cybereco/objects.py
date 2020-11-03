@@ -1,4 +1,3 @@
-import re
 import json
 from .exceptions import InvalidID
 from .functions import *
@@ -32,6 +31,7 @@ class Guild:
 
         # attrs
         self.data = data
+        self.guild = guild
         self.g_id = guild_id
         self.money_symbol: str = guild.get('money_symbol')
         self.money_rates: float = guild.get('money_rates')
@@ -51,14 +51,23 @@ class Guild:
         json.dump(data, open(FILENAME, 'w'), indent=4)
         return symbol
 
+    @property
+    def users(self):
+        data = [x['id'] for x in self.guild.get('users')]
+        return [Member(user_id=_id, guild_id=int(self.g_id)) for _id in data]
+
+    @property
+    def members(self):
+        return self.users
+
 
 class Member:
     def __init__(self, user_id: int, guild_id: int):
         self.u_id = str(user_id)
         self.g_id = str(guild_id)
         if not user_exists(user_id=user_id, guild_id=guild_id):
-            raw = json.load(open(FILENAME))
             data = create_user(user_id=user_id, guild_id=guild_id)
+            raw = json.load(open(FILENAME))
             index = [u['id'] for u in raw[self.g_id]['users']].index(user_id)
         else:
             raw = json.load(open(FILENAME))
@@ -92,6 +101,10 @@ class Member:
         self.raw[self.g_id]['users'] = data
         json.dump(self.raw, open(FILENAME, 'w'), indent=4)
         return amount
+
+
+class User(Member):
+    pass
 
 
 class Tool:

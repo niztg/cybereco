@@ -41,6 +41,21 @@ class Cog(commands.Cog):
         else:
             return await ctx.send(f"{cybereco.Member(user_id=user.id, guild_id=ctx.guild.id)}")
 
+    @commands.command(aliases=['lb'])
+    async def leaderboard(self, ctx):
+        embed = discord.Embed(title='Leaderboard')
+        guild = ctx.eco_guild
+        for member in sorted(guild.members, key=lambda x: x.balance, reverse=True):
+            real = discord.utils.find(lambda x: str(x.id) == member.u_id, ctx.guild.members)
+            embed.add_field(name=f"{real}", value=f"**{member.balance:,}** {guild.money_symbol}", inline=False)
+        await ctx.send(embed=embed)
+
+
+    @commands.command()
+    async def work(self, ctx):
+        balance = ctx.eco_author.update_balance(100)
+        await ctx.send(f"**{ctx.author}**, you just gained **{balance}** {ctx.eco_guild.money_symbol}!")
+
 
 
 def setup(bot):
