@@ -2,6 +2,7 @@ from discord.ext import commands
 import discord
 import cybereco
 import json
+import random
 
 
 class Cog(commands.Cog):
@@ -50,12 +51,53 @@ class Cog(commands.Cog):
             embed.add_field(name=f"{real}", value=f"**{member.balance:,}** {guild.money_symbol}", inline=False)
         await ctx.send(embed=embed)
 
-
     @commands.command()
     async def work(self, ctx):
         balance = ctx.eco_author.update_balance(100)
         await ctx.send(f"**{ctx.author}**, you just gained **{balance}** {ctx.eco_guild.money_symbol}!")
 
+    @commands.command(aliases=['mm'])
+    async def mastermind(self, ctx):
+        code = random.sample(list(map(str, list(range(9)))), 4)
+        tries = 0
+        statuses = {
+            0: ":red_circle:",
+            1: ":volleyball:",
+            2: ":green_circle:"
+        }
+        print(code)
+
+        def perfect(responses: list):
+            return responses == [2, 2, 2, 2]
+
+        while True:
+            final = []
+            tries += 1
+            msg = await self.bot.wait_for(
+                'message',
+                check=lambda m: (m.author, m.channel) == (ctx.author, ctx.channel)
+            )
+            msg = msg.content
+            if msg == "stop":
+                return await ctx.send("Stopping. the code was {}".format("".join(code)))
+            if not msg.isdigit() or not len(msg) == 4:
+                await ctx.send("That's not valid.")
+                continue
+            data = list(msg)
+            multiple = any(data.count(x) > 1 for x in data)
+            for x in range(4):
+                if data[x] == code[x]:
+                    final.append(2)
+                elif data[x] in code:
+                    final.append(1)
+                elif data[x] not in code:
+                    final.append(0)
+            if perfect(final):
+                return await ctx.send("You won! The code was {}".format("".join(code)))
+            else:
+                await ctx.send(" ".join(list(map(statuses.get, final))))
+                if multiple:
+                    await ctx.send("Note: codes do not contain 2 or more of the same number")
 
 
 def setup(bot):
