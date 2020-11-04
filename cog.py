@@ -72,7 +72,6 @@ class Cog(commands.Cog):
 
         while True:
             final = []
-            tries += 1
             msg = await self.bot.wait_for(
                 'message',
                 check=lambda m: (m.author, m.channel) == (ctx.author, ctx.channel)
@@ -81,10 +80,11 @@ class Cog(commands.Cog):
             if msg == "stop":
                 return await ctx.send("Stopping. the code was {}".format("".join(code)))
             if not msg.isdigit() or not len(msg) == 4:
-                await ctx.send("That's not valid.")
+                await ctx.send("{} is not a valid code. Codes are all 4 integers long.".format(msg))
                 continue
             data = list(msg)
             multiple = any(data.count(x) > 1 for x in data)
+            tries += 1
             for x in range(4):
                 if data[x] == code[x]:
                     final.append(2)
