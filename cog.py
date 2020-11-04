@@ -58,6 +58,7 @@ class Cog(commands.Cog):
 
     @commands.command(aliases=['mm'])
     async def mastermind(self, ctx):
+        await ctx.send('game el starto')
         code = random.sample(list(map(str, list(range(9)))), 4)
         tries = 0
         statuses = {
@@ -65,7 +66,6 @@ class Cog(commands.Cog):
             1: ":volleyball:",
             2: ":green_circle:"
         }
-        print(code)
 
         def perfect(responses: list):
             return responses == [2, 2, 2, 2]
@@ -93,9 +93,10 @@ class Cog(commands.Cog):
                 elif data[x] not in code:
                     final.append(0)
             if perfect(final):
-                return await ctx.send("You won! The code was {}".format("".join(code)))
+                return await ctx.send("You won in {} tries! The code was {}".format(tries, "".join(code)))
             else:
                 await ctx.send(" ".join(list(map(statuses.get, final))))
+                await ctx.send("{} tries".format(tries))
                 if multiple:
                     await ctx.send("Note: codes do not contain 2 or more of the same number")
 
