@@ -3,6 +3,34 @@ import discord
 import cybereco
 import json
 import random
+import asyncio
+
+
+class Fighter:
+    def __init__(self, member: discord.Member):
+        self.name = str(member)
+        self.health = 100
+        self.self = member
+
+    def update_heath(self, amt: int):
+        self.health += amt
+        return amt
+
+    @property
+    def dead(self):
+        return self.health <= 0
+
+    def heal(self):
+        if self.health == 100:
+            raise ValueError("You are already at max health, you can't heal now.")
+        else:
+            amt = 100 - self.health
+            heal = random.randint(1, amt)
+            self.update_heath(heal)
+            return heal
+
+    def __repr__(self):
+        return "{0.name} - ♥️ **{0.health}**".format(self)
 
 
 class Cog(commands.Cog):
@@ -99,6 +127,63 @@ class Cog(commands.Cog):
                 await ctx.send("{} tries".format(tries))
                 if multiple:
                     await ctx.send("Note: codes do not contain 2 or more of the same number")
+
+    @commands.command()
+    async def fight(self, ctx, member: discord.Member):
+        user_1 = Fighter(ctx.author)
+        await ctx.send(f"{member.mention}, {ctx.author} has challenged you to a fight. Do you accept?")
+        try:
+            msg = await self.bot.wait_for(
+                'message',
+                timeout=30,
+                check=lambda x: x.author == member
+            )
+            if msg.content.lower().startswith('y'):
+                user_2 = Fighter(member)
+            else:
+                return
+        except asyncio.TimeoutError:
+            return await ctx.send('out of time')
+
+        prompt = True
+        while (not user_1.dead) and (not user_2.dead):
+            await ctx.send(f"{user_1}\n{user_2}")
+            if prompt:
+                user = user_1
+                anti_user = user_2
+            else:
+                user = user_2
+                anti_user = user_1
+
+            prompt = not prompt
+
+            await ctx.send(f"{user.name}, attack/heal/end")
+            choice = await self.bot.wait_for(
+                'message',
+                check=lambda x: x.author == user.self
+            )
+            choice = choice.content
+            if choice == "attack":
+                dmg = random.randint(1, 100)
+                dealt = anti_user.update_heath(-dmg)
+                await ctx.send(f"{user.name}, you dealt {-dealt} damage")
+                if anti_user.dead:
+                    await ctx.send(f"{user}\n{anti_user}")
+                    return await ctx.send(f"{user.self.mention}, you win!")
+                else:
+                    continue
+            elif choice == "heal":
+                try:
+                    heal = user.heal()
+                    await ctx.send(f"You healed {heal} health")
+                except Exception as error:
+                    await ctx.send(error)
+                    continue
+            elif choice == "end":
+                return await ctx.send(f"{anti_user.self.mention}, you win!")
+            else:
+                await ctx.send("aint valid.")
+
 
 
 def setup(bot):
